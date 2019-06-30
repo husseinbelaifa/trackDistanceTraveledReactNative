@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { View, StyleSheet } from "react-native";
 import { MapView, Location } from "expo";
 export default class Run extends Component {
+  state = {
+    positions: []
+  };
   async componentDidMount() {
     this.listener = await Location.watchPositionAsync(
       {
@@ -19,6 +22,7 @@ export default class Run extends Component {
 
   onPositionChange = position => {
     console.log(position);
+    this.setState({ positions: [...this.state.positions, position] });
   };
   render() {
     return (
