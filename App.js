@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { Constants, Location, Permissions } from "expo";
+import Run from "./components/Run";
 // @flow
 
 export default class App extends React.Component {
@@ -14,10 +15,11 @@ export default class App extends React.Component {
 
   async componentDidMount() {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
     if ((status = "granted")) {
       const {
         coords: { latitude, longitude }
-      } = Location.getCurrentPositionAsync(options);
+      } = await Location.getCurrentPositionAsync();
       this.setState({
         AppState: { ready: true, latitude: latitude, longitude: longitude }
       });
@@ -27,18 +29,26 @@ export default class App extends React.Component {
   }
   render() {
     if (!this.state.AppState.ready) {
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="white" />
-      </View>;
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      );
     }
-    return <View />;
+    return (
+      <Run
+        distance={200}
+        latitude={this.state.AppState.latitude}
+        longitude={this.state.AppState.longitude}
+      />
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#29252b",
     alignItems: "center",
     justifyContent: "center"
   }
