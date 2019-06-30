@@ -1,7 +1,25 @@
 import React, { Component } from "react";
 import { View, StyleSheet } from "react-native";
-import { MapView } from "expo";
-export default class componentName extends Component {
+import { MapView, Location } from "expo";
+export default class Run extends Component {
+  async componentDidMount() {
+    this.listener = await Location.watchPositionAsync(
+      {
+        enableHighAccuracy: true,
+        timeInterval: 1000,
+        distanceInterval: 1
+      },
+      this.onPositionChange
+    );
+  }
+
+  componentWillUnmount() {
+    this.listener.remove();
+  }
+
+  onPositionChange = position => {
+    console.log(position);
+  };
   render() {
     return (
       <View style={styles.container}>
@@ -16,6 +34,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   map: {
-    flex: 0.61
+    flex: 1
   }
 });
