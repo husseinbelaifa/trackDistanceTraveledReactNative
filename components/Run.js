@@ -4,6 +4,7 @@ import { MapView, Location } from "expo";
 
 const { Marker, Polyline } = MapView;
 import Monitor from "./Monitor";
+import * as turf from "@turf/turf";
 export default class Run extends Component {
   state = {
     positions: [],
@@ -24,10 +25,46 @@ export default class Run extends Component {
     this.listener.remove();
   }
 
+  distancesBetween(originPosition, destinationPosition) {
+    console.log("originPosition");
+    console.log(destinationPosition);
+
+    const from = turf.point([
+      originPosition.coords.longitude,
+      originPosition.coords.latitude
+    ]);
+
+    const to = turf.point([
+      destinationPosition.coords.longitude,
+      destinationPosition.coords.latitude
+    ]);
+    const options = { units: "miles" };
+
+    return Math.round(turf.distance(from, to, options));
+  }
+
   onPositionChange = position => {
     console.log(position);
+    const lastPosition =
+      this.state.positions.length === 0
+        ? {
+            coords: {
+              latitude: this.props.latitude,
+              longitude: this.props.longitude
+            }
+          }
+        : this.state.positions[this.state.positions.length - 1];
+
+    const distance =
+      this.props.distance + this.distancesBetween(lastPosition, position);
+
+    console.log("distance");
+    console.log(this.distancesBetween(lastPosition, position));
+    console.log(distance);
+
     this.setState({
-      positions: [...this.state.positions, position]
+      positions: [...this.state.positions, position],
+      distance: distance
     });
   };
   render() {
@@ -52,7 +89,7 @@ export default class Run extends Component {
     console.log(currentPosition);
     return (
       <View style={styles.container}>
-        <Monitor distance={this.props.distance} />
+        <Monitor distance={this.state.distance} />
         <MapView
           style={styles.map}
           provider="google"
