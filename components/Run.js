@@ -3,10 +3,11 @@ import { View, StyleSheet } from "react-native";
 import { MapView, Location } from "expo";
 
 const { Marker, Polyline } = MapView;
-
+import Monitor from "./Monitor";
 export default class Run extends Component {
   state = {
-    positions: []
+    positions: [],
+    distance: 0
   };
   async componentDidMount() {
     this.listener = await Location.watchPositionAsync(
@@ -25,7 +26,9 @@ export default class Run extends Component {
 
   onPositionChange = position => {
     console.log(position);
-    this.setState({ positions: [...this.state.positions, position] });
+    this.setState({
+      positions: [...this.state.positions, position]
+    });
   };
   render() {
     const { latitude, longitude } = this.props;
@@ -49,6 +52,7 @@ export default class Run extends Component {
     console.log(currentPosition);
     return (
       <View style={styles.container}>
+        <Monitor distance={this.props.distance} />
         <MapView
           style={styles.map}
           provider="google"
